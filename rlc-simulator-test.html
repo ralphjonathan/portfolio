@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Engineering Simulator Playground</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg-color: #121214;
+            --panel-bg: #1e1e22;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --slider-track: #3f3f46;
+            --slider-thumb: #818cf8;
+            --border-color: #2e2e33;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .simulator-container {
+            background-color: var(--panel-bg);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 840px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            position: relative;
+        }
+
+        /* Tabs Navigation */
+        .playground-tabs {
+            display: flex;
+            gap: 8px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn.active {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sim-view {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .sim-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Layout */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .title-section h1 {
+            font-size: 1.25rem;
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .title-section .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stats-section {
+            display: flex;
+            gap: 24px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .chart-section {
+            background-color: #0c0c0e;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 32px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .chart-header {
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+        }
+
+        .chart-subtitle {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 0 0 16px 0;
+        }
+
+        .custom-legend {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-color.blue { background-color: var(--accent-blue); }
+        .legend-color.green { background-color: var(--accent-green); }
+
+        .y-axis-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: -10px;
+            z-index: 10;
+            position: relative;
+            color: var(--text-muted);
+        }
+
+        .chart-container {
+            height: 350px;
+            width: 100%;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px 48px;
+            margin-bottom: 24px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .control-group label {
+            font-size: 0.9rem;
+            width: 120px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .slider-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            margin: 0 16px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 5px;
+            background: var(--slider-track);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 24px;
+            background: var(--slider-thumb);
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+            transition: background 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #a5b4fc;
+        }
+
+        .number-input {
+            width: 60px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 8px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: inherit;
+            font-weight: 600;
+            -moz-appearance: textfield;
+        }
+        
+        .number-input::-webkit-outer-spin-button,
+        .number-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--slider-thumb);
+            box-shadow: 0 0 6px rgba(129, 140, 248, 0.2);
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #27272a;
+            color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background-color: #3f3f46;
+            border-color: #52525b;
+        }
+
+        /* Transformer Simulator Specific Styles */
+        .trans-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .trans-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        .trans-stats {
+            display: flex;
+            gap: 28px;
+        }
+
+        .trans-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .trans-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .trans-stat-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .trans-visual-container {
+            width: 100%;
+            height: 420px;
+            background-color: #0b0b0d;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: inset 0 4px 20px rgba(0,0,0,0.8);
+            margin-bottom: 32px;
+        }
+
+        .trans-svg, .trans-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .trans-canvas {
+            pointer-events: none;
+        }
+
+        .trans-control-panel {
+            background-color: rgba(0, 0, 0, 0.15);
+            padding: 20px 24px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .trans-control-panel label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        .trans-slider-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .trans-val-box {
+            width: 54px;
+            padding: 8px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .header, .trans-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            .stats-section, .trans-stats {
+                flex-wrap: wrap;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .trans-control-panel {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="simulator-container">
+    <!-- Navigation Tabs -->
+    <div class="playground-tabs">
+        <button class="tab-btn active" onclick="switchTab('rlc')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+            RLC Circuit Transient
+        </button>
+        <button class="tab-btn" onclick="switchTab('transformer')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M21 12H3M12 3v18"/></svg>
+            Transformer Magnetics
+        </button>
+        <button class="tab-btn" onclick="switchTab('hexapod')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Hexapod Kinematics
+        </button>
+    </div>
+
+    <!-- VIEW 1: RLC Transient Simulator -->
+    <div id="rlc-sim-view" class="sim-view active">
+        <div class="header">
+            <div class="title-section">
+                <h1>RLC Circuit Transient Simulator</h1>
+                <div class="subtitle" id="sys-char">System Character: UNDERDAMPED</div>
+            </div>
+            <div class="stats-section">
+                <div class="stat-item">
+                    <span class="stat-label">State</span>
+                    <span class="stat-value" id="stat-state">Underdamped</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">&alpha; (Damping)</span>
+                    <span class="stat-value" id="stat-alpha">26.8</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">&omega;&#8320; (Resonance)</span>
+                    <span class="stat-value" id="stat-omega">173.5</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Settling Time</span>
+                    <span class="stat-value" id="stat-ts">0.186 s</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2 class="chart-title">RLC Transient Step Response</h2>
+                <h3 class="chart-subtitle" id="chart-damping-title">Damping: Underdamped</h3>
+                <div class="custom-legend">
+                    <div class="legend-item">
+                        <div class="legend-color blue"></div>
+                        <span>Voltage Vc (V)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color green"></div>
+                        <span>Current i (A)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="y-axis-label">Magnitude (V or A) &rarr;</div>
+            <div class="chart-container">
+                <canvas id="rlcChart"></canvas>
+            </div>
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <label>DC Voltage (V)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="slide-vdc" min="0" max="100" step="1" value="60">
+                </div>
+                <input type="number" id="in-vdc" class="number-input" value="60">
+            </div>
+            <div class="control-group">
+                <label>Resistance (&Omega;)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="slide-r" min="1" max="200" step="1" value="22">
+                </div>
+                <input type="number" id="in-r" class="number-input" value="22">
+            </div>
+            <div class="control-group">
+                <label>Inductance (H)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="slide-l" min="0.01" max="2" step="0.01" value="0.41">
+                </div>
+                <input type="number" id="in-l" class="number-input" value="0.41">
+            </div>
+            <div class="control-group">
+                <label>Capacitance (&mu;F)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="slide-c" min="1" max="200" step="1" value="81">
+                </div>
+                <input type="number" id="in-c" class="number-input" value="81">
+            </div>
+        </div>
+
+        <button class="reset-btn" id="reset-btn">Reset Values</button>
+    </div>
+
+    <!-- VIEW 2: Transformer Air Gap & Magnetizing Current -->
+    <div id="transformer-sim-view" class="sim-view">
+        <div class="trans-header">
+            <h2 class="trans-title">Transformer Air Gap & Magnetizing Current</h2>
+            <div class="trans-stats">
+                <div class="trans-stat">
+                    <span class="trans-stat-label">MAGNETIC FLUX</span>
+                    <span class="trans-stat-value">100.0 % (Fixed)</span>
+                </div>
+                <div class="trans-stat">
+                    <span class="trans-stat-label">REQUIRED CURRENT</span>
+                    <span class="trans-stat-value" id="stat-current">58.5 A</span>
+                </div>
+                <div class="trans-stat">
+                    <span class="trans-stat-label">RELUCTANCE</span>
+                    <span class="trans-stat-value" id="stat-reluctance">2.3 R</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Interactive Window -->
+        <div class="trans-visual-container">
+            <!-- Background Layer: grid, wires, AC source, back turns, Left core, Right core -->
+            <svg id="trans-svg-back" class="trans-svg" viewBox="0 0 720 400"></svg>
+            
+            <!-- Canvas Layer: animated glowing particles -->
+            <svg id="trans-svg-flux" class="trans-svg" viewBox="0 0 720 400"></svg>
+            
+            <!-- Foreground Layer: front turns, labels -->
+            <svg id="trans-svg-front" class="trans-svg" viewBox="0 0 720 400"></svg>
+        </div>
+
+        <!-- Interactive Control Panel -->
+        <div class="trans-control-panel">
+            <label for="slide-gap">Air Gap Size</label>
+            <div class="trans-slider-wrapper">
+                <input type="range" id="slide-gap" min="0" max="20" step="1" value="13">
+            </div>
+            <div class="trans-val-box" id="in-gap">13</div>
+        </div>
+    </div>
+
+    <!-- VIEW 3: Hexapod Kinematics -->
+    <div id="hexapod-sim-view" class="sim-view">
+        <div class="trans-header">
+            <h2 class="trans-title">Hexapod Leg Mechanism</h2>
+            <div class="trans-stats">
+                <div class="trans-stat">
+                    <span class="trans-stat-label">FOOT X</span>
+                    <span class="trans-stat-value" id="hex-val-x">0.00 cm</span>
+                </div>
+                <div class="trans-stat">
+                    <span class="trans-stat-label">FOOT Y (DEPTH)</span>
+                    <span class="trans-stat-value" id="hex-val-y">0.00 cm</span>
+                </div>
+                <div class="trans-stat">
+                    <span class="trans-stat-label">FOOT Z (HEIGHT)</span>
+                    <span class="trans-stat-value" id="hex-val-z">0.00 cm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="trans-visual-container" id="hexapod-canvas-container" style="display: flex; justify-content: center; align-items: center; background-color: #1a1a24;">
+            <!-- ThreeJS canvas will go here -->
+        </div>
+
+        <div class="controls-grid">
+            <div class="control-group">
+                <label>Coxa (Yaw)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="hex-slide-coxa" min="0" max="180" step="1" value="90">
+                </div>
+                <input type="number" id="hex-in-coxa" class="number-input" value="90">
+            </div>
+            <div class="control-group">
+                <label>Femur (Lift)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="hex-slide-femur" min="0" max="180" step="1" value="90">
+                </div>
+                <input type="number" id="hex-in-femur" class="number-input" value="90">
+            </div>
+            <div class="control-group">
+                <label>Tibia (Retract)</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="hex-slide-tibia" min="0" max="180" step="1" value="90">
+                </div>
+                <input type="number" id="hex-in-tibia" class="number-input" value="90">
+            </div>
+        </div>
+        <button class="reset-btn" id="hex-reset-btn">Reset Position</button>
+    </div>
+</div>
+
+<script>
+    /* ==========================================
+       TAB SWITCHING
+       ========================================== */
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.sim-view').forEach(view => view.classList.remove('active'));
+        
+        if (tabId === 'rlc') {
+            document.getElementById('rlc-sim-view').classList.add('active');
+            document.querySelector('[onclick="switchTab(\'rlc\')"]').classList.add('active');
+            chart.resize();
+        } else if (tabId === 'transformer') {
+            document.getElementById('transformer-sim-view').classList.add('active');
+            document.querySelector('[onclick="switchTab(\'transformer\')"]').classList.add('active');
+            initTransformerSim();
+        } else if (tabId === 'hexapod') {
+            document.getElementById('hexapod-sim-view').classList.add('active');
+            document.querySelector('[onclick="switchTab(\'hexapod\')"]').classList.add('active');
+            initHexapodSim();
+        }
+    }
+
+    /* ==========================================
+       RLC CIRCUIT TRANSIENT SIMULATOR LOGIC
+       ========================================== */
+    const ctx = document.getElementById('rlcChart').getContext('2d');
+    
+    let chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Voltage',
+                    borderColor: '#3b82f6',
+                    data: [],
+                    pointRadius: 0,
+                    borderWidth: 2.5,
+                    tension: 0.4
+                },
+                {
+                    label: 'Current',
+                    borderColor: '#10b981',
+                    data: [],
+                    pointRadius: 0,
+                    borderWidth: 2.5,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y.toFixed(2);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#9ca3af',
+                        callback: function(value) { return ''; },
+                        maxTicksLimit: 10
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    min: 0,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: '#f3f4f6',
+                        font: {
+                            family: 'Inter'
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    function updateSimulation() {
+        const Vdc = parseFloat(document.getElementById('in-vdc').value);
+        const R = parseFloat(document.getElementById('in-r').value);
+        const L = parseFloat(document.getElementById('in-l').value);
+        const C = parseFloat(document.getElementById('in-c').value) * 1e-6;
+
+        const alpha = R / (2 * L);
+        const omega0 = 1 / Math.sqrt(L * C);
+        
+        let state = "";
+        if (alpha > omega0) {
+            state = "Overdamped";
+        } else if (Math.abs(alpha - omega0) < 1e-3) {
+            state = "Critically Damped";
+        } else {
+            state = "Underdamped";
+        }
+
+        let tMax = 0;
+        if (state === "Underdamped") {
+            tMax = Math.max(5 / alpha, 2 * (2*Math.PI / omega0));
+            tMax = Math.min(tMax, 2.0);
+        } else {
+            const s1 = -alpha + Math.sqrt(Math.abs(alpha*alpha - omega0*omega0));
+            const s2 = -alpha - Math.sqrt(Math.abs(alpha*alpha - omega0*omega0));
+            const s_min = Math.min(Math.abs(s1), Math.abs(s2)) || alpha;
+            tMax = 5 / s_min;
+        }
+        
+        if(!isFinite(tMax) || tMax < 0.001) tMax = 0.1;
+
+        const points = 500;
+        const dt = tMax / points;
+        
+        const timeData = [];
+        const vData = [];
+        const iData = [];
+
+        let settlingTime = -1;
+
+        for (let i = 0; i <= points; i++) {
+            let t = i * dt;
+            let v, curr;
+            
+            if (state === "Overdamped") {
+                const s1 = -alpha + Math.sqrt(alpha*alpha - omega0*omega0);
+                const s2 = -alpha - Math.sqrt(alpha*alpha - omega0*omega0);
+                const A1 = -Vdc * s2 / (s2 - s1);
+                const A2 = Vdc * s1 / (s2 - s1);
+                v = Vdc + A1 * Math.exp(s1 * t) + A2 * Math.exp(s2 * t);
+                curr = C * (A1 * s1 * Math.exp(s1 * t) + A2 * s2 * Math.exp(s2 * t));
+            } else if (state === "Underdamped") {
+                const wd = Math.sqrt(omega0*omega0 - alpha*alpha);
+                v = Vdc * (1 - Math.exp(-alpha * t) * (Math.cos(wd * t) + (alpha / wd) * Math.sin(wd * t)));
+                curr = (Vdc / (L * wd)) * Math.exp(-alpha * t) * Math.sin(wd * t);
+            } else {
+                v = Vdc - Vdc * (1 + alpha * t) * Math.exp(-alpha * t);
+                curr = C * Vdc * alpha * alpha * t * Math.exp(-alpha * t);
+            }
+            
+            timeData.push(t);
+            vData.push(v);
+            iData.push(curr);
+        }
+        
+        const margin = 0.02 * Math.abs(Vdc);
+        if(margin > 0) {
+            for(let i = points; i >= 0; i--) {
+                if(Math.abs(vData[i] - Vdc) > margin) {
+                    settlingTime = timeData[Math.min(i+1, points)];
+                    break;
+                }
+            }
+            if (settlingTime === -1 && Math.abs(vData[0] - Vdc) <= margin) settlingTime = 0;
+        }
+
+        document.getElementById('stat-state').innerText = state;
+        document.getElementById('stat-alpha').innerText = alpha.toFixed(1);
+        document.getElementById('stat-omega').innerText = omega0.toFixed(1);
+        document.getElementById('stat-ts').innerText = settlingTime > 0 ? settlingTime.toFixed(3) + " s" : "N/A";
+        
+        document.getElementById('sys-char').innerText = "System Character: " + state.toUpperCase();
+        document.getElementById('chart-damping-title').innerText = "Damping: " + state;
+
+        chart.data.labels = timeData;
+        chart.data.datasets[0].data = vData;
+        chart.data.datasets[1].data = iData;
+        chart.update();
+    }
+
+    // Connect RLC sliders and number inputs
+    ['vdc', 'r', 'l', 'c'].forEach(id => {
+        const slider = document.getElementById(`slide-${id}`);
+        const input = document.getElementById(`in-${id}`);
+        
+        slider.addEventListener('input', () => {
+            input.value = slider.value;
+            updateSimulation();
+        });
+        
+        input.addEventListener('input', () => {
+            let val = parseFloat(input.value);
+            if (!isNaN(val)) {
+                slider.value = val;
+                updateSimulation();
+            }
+        });
+    });
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        const defaults = { vdc: 60, r: 22, l: 0.41, c: 81 };
+        Object.keys(defaults).forEach(id => {
+            document.getElementById(`slide-${id}`).value = defaults[id];
+            document.getElementById(`in-${id}`).value = defaults[id];
+        });
+        updateSimulation();
+    });
+
+    // Initial RLC draw
+    updateSimulation();
+
+
+    /* ==========================================
+       TRANSFORMER AIR GAP SIMULATOR LOGIC
+       ========================================== */
+    const svgBack = document.getElementById('trans-svg-back');
+    const svgFlux = document.getElementById('trans-svg-flux');
+    const svgFront = document.getElementById('trans-svg-front');
+    const slideGap = document.getElementById('slide-gap');
+    const valGap = document.getElementById('in-gap');
+
+    let gapSize = parseFloat(slideGap.value);
+    let gapOffset = gapSize * 2.5;
+
+    const coreXMin = 220;
+    const coreYMin = 120;
+    const coreXMax = 500;
+    const coreYMax = 280;
+    const coreT = 38;
+
+    function setupTransformerSVG() {
+        const defsHtml = `
+            <defs>
+                <pattern id="trans-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255, 255, 255, 0.015)" stroke-width="1"/>
+                </pattern>
+                <radialGradient id="ac-glow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(59, 130, 246, 0.25)" />
+                    <stop offset="100%" stop-color="rgba(59, 130, 246, 0)" />
+                </radialGradient>
+                <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+        `;
+
+        let backHtml = defsHtml;
+        backHtml += `<rect width="100%" height="100%" fill="url(#trans-grid)" />`;
+        
+        backHtml += `
+            <path d="M 140 180 Q 185 180 200 148 T 224 148" fill="none" stroke="#2d2d35" stroke-width="3.5" />
+            <path d="M 140 220 Q 185 220 200 252 T 224 252" fill="none" stroke="#2d2d35" stroke-width="3.5" />
+        `;
+
+        backHtml += `
+            <circle cx="140" cy="200" r="30" fill="url(#ac-glow)" />
+            <circle cx="140" cy="200" r="24" fill="#131317" stroke="#3b82f6" stroke-width="3" id="ac-source-ring" />
+            <path id="ac-bolt" d="M 140 184 L 131 201 H 139 L 138 216 L 149 199 H 141 Z" fill="#3b82f6" filter="url(#soft-glow)" />
+        `;
+
+        backHtml += `
+            <rect id="coil-glow-bg" x="195" y="125" width="80" height="150" rx="12" 
+                  fill="#3b82f6" opacity="0.05" filter="url(#soft-glow)" />
+        `;
+
+        backHtml += `
+            <path d="M 360 120 H 220 V 280 H 360 V 242 H 258 V 158 H 360 Z" 
+                  fill="#1e293b" stroke="#475569" stroke-width="3" />
+        `;
+
+        backHtml += `
+            <path id="right-core" d="M 360 120 H 500 V 280 H 360 V 242 H 462 V 158 H 360 Z" 
+                  fill="#1e293b" stroke="#475569" stroke-width="3" />
+        `;
+
+        let backTurns = '';
+        const numTurns = 8;
+        const startY = 138;
+        const endY = 262;
+        const stepY = (endY - startY) / (numTurns - 1);
+
+        for (let i = 0; i < numTurns; i++) {
+            let yc = startY + i * stepY;
+            backTurns += `
+                <path d="M 258 ${yc + 6.5} Q 202 ${yc + 1.5} 220 ${yc - 4}" 
+                      fill="none" stroke="#1e3a8a" stroke-width="5" />
+                <path class="coil-wire" d="M 258 ${yc + 6.5} Q 202 ${yc + 1.5} 220 ${yc - 4}" 
+                      fill="none" stroke="#3b82f6" stroke-width="3" />
+            `;
+        }
+        backHtml += backTurns;
+        svgBack.innerHTML = backHtml;
+
+        let frontHtml = '';
+        let frontTurns = '';
+        for (let i = 0; i < numTurns; i++) {
+            let yc = startY + i * stepY;
+            frontTurns += `
+                <path d="M 220 ${yc - 4} Q 278 ${yc - 9} 258 ${yc - 14.5}" 
+                      fill="none" stroke="#0f172a" stroke-width="6.5" />
+                <path class="coil-wire" d="M 220 ${yc - 4} Q 278 ${yc - 9} 258 ${yc - 14.5}" 
+                      fill="none" stroke="#3b82f6" stroke-width="5.5" />
+                <path class="coil-highlight" d="M 220 ${yc - 4} Q 278 ${yc - 9} 258 ${yc - 14.5}" 
+                      fill="none" stroke="#93c5fd" stroke-width="1.5" opacity="0.8" filter="url(#soft-glow)" />
+            `;
+        }
+        frontHtml += frontTurns;
+
+        frontHtml += `
+            <g transform="translate(0, 0)">
+                <rect x="156" y="328" width="108" height="24" rx="12" fill="#131317" stroke="#475569" stroke-width="1.2" />
+                <text x="210" y="343" font-size="9" font-weight="700" fill="#f3f4f6" text-anchor="middle" letter-spacing="0.06em">PRIMARY COIL</text>
+            </g>
+            <g id="core-label-group">
+                <rect x="424" y="56" width="112" height="24" rx="12" fill="#131317" stroke="#475569" stroke-width="1.2" />
+                <text x="480" y="71" font-size="9" font-weight="700" fill="#f3f4f6" text-anchor="middle" letter-spacing="0.06em">MAGNETIC CORE</text>
+            </g>
+            <text id="air-gap-text" y="205" font-size="12" font-weight="700" fill="#ef4444" 
+                  text-anchor="middle" letter-spacing="0.12em" filter="url(#soft-glow)" opacity="0">AIR GAP</text>
+        `;
+        svgFront.innerHTML = frontHtml;
+    }
+
+    function interpolateColor(color1, color2, factor) {
+        let result = color1.slice();
+        for (let i = 0; i < 3; i++) {
+            result[i] = Math.round(result[i] + factor * (color2[i] - color1[i]));
+        }
+        return `rgb(${result[0]}, ${result[1]}, ${result[2]})`;
+    }
+
+    function updateTransformerSim() {
+        gapSize = parseFloat(slideGap.value);
+        valGap.innerText = gapSize;
+
+        const reluctance = 1.0 + 0.1 * gapSize;
+        const current = 10.0 * (1.0 + 0.25 * gapSize + 0.00946 * gapSize * gapSize);
+
+        document.getElementById('stat-reluctance').innerText = reluctance.toFixed(1) + " R";
+        document.getElementById('stat-current').innerText = current.toFixed(1) + " A";
+
+        gapOffset = gapSize * 2.8;
+
+        const rightCore = document.getElementById('right-core');
+        if (rightCore) rightCore.setAttribute('transform', `translate(${gapOffset}, 0)`);
+
+        const coreLabelGroup = document.getElementById('core-label-group');
+        if (coreLabelGroup) coreLabelGroup.setAttribute('transform', `translate(${gapOffset}, 0)`);
+
+        const airGapText = document.getElementById('air-gap-text');
+        if (airGapText) {
+            airGapText.setAttribute('x', 360 + gapOffset / 2);
+            airGapText.setAttribute('opacity', gapSize > 0 ? "1" : "0");
+        }
+
+        const currentRatio = current / 10.0;
+        const intensity = Math.min((currentRatio - 1) / 4.85, 1.0);
+
+        const c1 = [59, 130, 246];
+        const c2 = [239, 68, 68];
+        const newColor = interpolateColor(c1, c2, intensity);
+        
+        const coilWires = document.querySelectorAll('.coil-wire');
+        coilWires.forEach(w => w.setAttribute('stroke', newColor));
+        
+        const highlights = document.querySelectorAll('.coil-highlight');
+        highlights.forEach(h => {
+            h.setAttribute('stroke-width', (1.5 + intensity * 2.0).toFixed(2));
+            h.setAttribute('opacity', (0.8 + intensity * 0.2).toFixed(2));
+        });
+
+        const coilGlowBg = document.getElementById('coil-glow-bg');
+        if (coilGlowBg) {
+            coilGlowBg.setAttribute('opacity', (0.05 + intensity * 0.2).toFixed(3));
+            coilGlowBg.setAttribute('fill', newColor);
+        }
+
+        const acBolt = document.getElementById('ac-bolt');
+        if (acBolt) {
+            acBolt.setAttribute('fill', newColor);
+            if (intensity > 0.5) {
+                acBolt.setAttribute('filter', 'url(#soft-glow)');
+            } else {
+                acBolt.setAttribute('filter', 'none');
+            }
+        }
+        
+        const acRing = document.getElementById('ac-source-ring');
+        if (acRing) acRing.setAttribute('stroke', newColor);
+
+        updateFluxPaths();
+    }
+
+    let fluxOffset = 0;
+    let fluxAnimationId = null;
+
+    function updateFluxPaths() {
+        let fluxHtml = '';
+        const loops = [
+            { offset: -11, fringing: 1.35 },
+            { offset: 0,   fringing: 0.70 },
+            { offset: 11,  fringing: 0.22 }
+        ];
+
+        loops.forEach((loop, idx) => {
+            const xL = coreXMin + coreT / 2 + loop.offset;
+            const xR = (coreXMax - coreT / 2) + gapOffset - loop.offset;
+            const yT = coreYMin + coreT / 2 + loop.offset;
+            const yB = coreYMax - coreT / 2 - loop.offset;
+
+            const gapStart = 360;
+            const gapEnd = 360 + gapOffset;
+            
+            let pathD = `M ${xL} ${yT} `;
+            
+            if (gapOffset > 0) {
+                const bulgeT = gapOffset * 0.45 * loop.fringing;
+                pathD += `L ${gapStart} ${yT} `;
+                pathD += `Q ${gapStart + gapOffset/2} ${yT - bulgeT} ${gapEnd} ${yT} `;
+                pathD += `L ${xR} ${yT} `;
+            } else {
+                pathD += `L ${xR} ${yT} `;
+            }
+
+            pathD += `L ${xR} ${yB} `;
+            
+            if (gapOffset > 0) {
+                const bulgeB = gapOffset * 0.45 * loop.fringing;
+                pathD += `L ${gapEnd} ${yB} `;
+                pathD += `Q ${gapStart + gapOffset/2} ${yB + bulgeB} ${gapStart} ${yB} `;
+                pathD += `L ${xL} ${yB} `;
+            } else {
+                pathD += `L ${xL} ${yB} `;
+            }
+
+            pathD += `Z`;
+
+            fluxHtml += `
+                <path d="${pathD}" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.3" filter="url(#soft-glow)" />
+                <path id="flux-path-${idx}" d="${pathD}" fill="none" stroke="#10b981" stroke-width="2.5" 
+                      stroke-dasharray="8 12" stroke-dashoffset="${fluxOffset}" filter="url(#soft-glow)"/>
+                <path id="flux-path-core-${idx}" d="${pathD}" fill="none" stroke="#fff" stroke-width="1" 
+                      stroke-dasharray="8 12" stroke-dashoffset="${fluxOffset}" />
+            `;
+        });
+
+        svgFlux.innerHTML = fluxHtml;
+    }
+
+    function animateFlux() {
+        fluxOffset -= 1.5;
+        for(let i=0; i<3; i++) {
+            const p1 = document.getElementById(`flux-path-${i}`);
+            const p2 = document.getElementById(`flux-path-core-${i}`);
+            if (p1) p1.setAttribute('stroke-dashoffset', fluxOffset);
+            if (p2) p2.setAttribute('stroke-dashoffset', fluxOffset);
+        }
+        fluxAnimationId = requestAnimationFrame(animateFlux);
+    }
+
+    function initTransformerSim() {
+        if (svgBack.children.length === 0) {
+            setupTransformerSVG();
+        }
+        updateTransformerSim();
+
+        if (fluxAnimationId) {
+            cancelAnimationFrame(fluxAnimationId);
+        }
+        animateFlux();
+    }
+
+    slideGap.addEventListener('input', updateTransformerSim);
+
+    function stopTransformerAnimation() {
+        if (fluxAnimationId) {
+            cancelAnimationFrame(fluxAnimationId);
+            fluxAnimationId = null;
+        }
+    }
+
+    const originalSwitchTab = switchTab;
+    switchTab = function(tabId) {
+        if (tabId !== 'transformer' && typeof stopTransformerAnimation === 'function') {
+            stopTransformerAnimation();
+        }
+        if (tabId !== 'hexapod' && typeof stopHexapodAnimation === 'function') {
+            stopHexapodAnimation();
+        }
+        originalSwitchTab(tabId);
+    };
+
+    /* ==========================================
+       HEXAPOD SIMULATOR LOGIC
+       ========================================== */
+    let hexapodInitialized = false;
+    let hexAnimationId = null;
+
+    function initHexapodSim() {
+        if (hexapodInitialized) {
+            if (!hexAnimationId) window.hexAnimate();
+            return;
+        }
+        hexapodInitialized = true;
+
+        const container = document.getElementById('hexapod-canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a24);
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(20, 20, 30);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        const gridHelper = new THREE.GridHelper(50, 50, 0x444455, 0x333344);
+        scene.add(gridHelper);
+
+        const bodyMat = new THREE.MeshPhongMaterial({ color: 0x3a3a45 });
+        const servoMat = new THREE.MeshPhongMaterial({ color: 0x88bbff });
+        const linkMat = new THREE.MeshPhongMaterial({ color: 0x555555 });
+        const footMat = new THREE.MeshPhongMaterial({ color: 0x5599ff });
+
+        const bodyGeom = new THREE.BoxGeometry(4, 1, 6);
+        const body = new THREE.Mesh(bodyGeom, bodyMat);
+        body.position.y = 10;
+        scene.add(body);
+
+        const coxaGroup = new THREE.Group();
+        body.add(coxaGroup);
+        coxaGroup.position.set(2.5, 0, 0);
+
+        const coxaServo = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.5, 1.5), servoMat);
+        coxaGroup.add(coxaServo);
+
+        const coxaLink = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 2), linkMat);
+        coxaLink.rotation.z = Math.PI / 2;
+        coxaLink.position.x = 1;
+        coxaGroup.add(coxaLink);
+
+        const femurGroup = new THREE.Group();
+        coxaGroup.add(femurGroup);
+        femurGroup.position.x = 2;
+
+        const femurServo = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), servoMat);
+        femurGroup.add(femurServo);
+
+        const femurLink = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 6), linkMat);
+        femurLink.rotation.z = Math.PI / 2;
+        femurLink.position.x = 3;
+        femurGroup.add(femurLink);
+
+        const tibiaGroup = new THREE.Group();
+        femurGroup.add(tibiaGroup);
+        tibiaGroup.position.x = 6;
+
+        const tibiaServo = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), servoMat);
+        tibiaGroup.add(tibiaServo);
+
+        const tibiaLink = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 8), linkMat);
+        tibiaLink.rotation.z = Math.PI / 2;
+        tibiaLink.position.x = 4;
+        tibiaGroup.add(tibiaLink);
+
+        const foot = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), footMat);
+        tibiaGroup.add(foot);
+        foot.position.x = 8;
+
+        const hud = {
+            x: document.getElementById('hex-val-x'),
+            y: document.getElementById('hex-val-y'),
+            z: document.getElementById('hex-val-z')
+        };
+
+        function updateKinematics() {
+            const cVal = parseInt(document.getElementById('hex-slide-coxa').value);
+            const fVal = parseInt(document.getElementById('hex-slide-femur').value);
+            const tVal = parseInt(document.getElementById('hex-slide-tibia').value);
+
+            coxaGroup.rotation.y = -(cVal - 90) * (Math.PI / 180);
+            femurGroup.rotation.z = (fVal - 90) * (Math.PI / 180);
+            tibiaGroup.rotation.z = (tVal - 90) * (Math.PI / 180);
+
+            const footPos = new THREE.Vector3();
+            foot.getWorldPosition(footPos);
+
+            hud.x.innerText = footPos.x.toFixed(2) + " cm";
+            hud.y.innerText = footPos.z.toFixed(2) + " cm";
+            hud.z.innerText = footPos.y.toFixed(2) + " cm";
+        }
+
+        ['coxa', 'femur', 'tibia'].forEach(id => {
+            const slider = document.getElementById(`hex-slide-${id}`);
+            const input = document.getElementById(`hex-in-${id}`);
+            
+            slider.addEventListener('input', () => {
+                input.value = slider.value;
+                updateKinematics();
+            });
+            
+            input.addEventListener('input', () => {
+                let val = parseFloat(input.value);
+                if (!isNaN(val)) {
+                    slider.value = val;
+                    updateKinematics();
+                }
+            });
+        });
+
+        document.getElementById('hex-reset-btn').addEventListener('click', () => {
+            ['coxa', 'femur', 'tibia'].forEach(id => {
+                document.getElementById(`hex-slide-${id}`).value = 90;
+                document.getElementById(`hex-in-${id}`).value = 90;
+            });
+            updateKinematics();
+        });
+
+        updateKinematics();
+
+        window.hexAnimate = function() {
+            hexAnimationId = requestAnimationFrame(window.hexAnimate);
+            renderer.render(scene, camera);
+        };
+        window.hexAnimate();
+    }
+    
+    function stopHexapodAnimation() {
+        if (hexAnimationId) {
+            cancelAnimationFrame(hexAnimationId);
+            hexAnimationId = null;
+        }
+    }
+
+    // Ensure the animation runs if we are on the transformer tab initially
+    if (document.getElementById('transformer-sim-view').classList.contains('active')) {
+        initTransformerSim();
+    }
+</script>
+</body>
+</html>

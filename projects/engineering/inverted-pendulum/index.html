@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inverted Pendulum | Ralph Jonathan R. Calzada</title>
+  <link rel="stylesheet" href="../../../style.css">
+  <style>
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .bento-main {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    .bento-sub {
+      grid-column: 2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+      .bento-main {
+        grid-column: 1;
+        grid-row: auto;
+      }
+      .bento-sub {
+        grid-column: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav>
+    <div class="container">
+      <a href="../../../index.html" class="logo">RALPH JONATHAN</a>
+      <ul>
+        <li><a href="../../../index.html">Home</a></li>
+        <li><a href="../../../projects.html" class="active">Projects</a></li>
+        <li><a href="../../../about.html">About</a></li>
+        <li><a href="../../../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container fade-in-section" style="padding-top: 4rem;">
+    <!-- Header -->
+    <div style="margin-bottom: 3rem;">
+      <h1 style="margin-bottom: 1rem; font-size: clamp(2rem, 4vw, 3.5rem);">Inverted Pendulum (Self-Adjusting Setpoint
+        PID Control)</h1>
+      <p style="color: var(--text-dim); margin-bottom: 2rem;">December 2024 &bull; Completed</p>
+
+      <!-- Tags -->
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <span
+            style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); min-width: 80px;">Topics</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="../../../filter.html?tag=Engineering" class="chip chip-topic">Engineering</a>
+            <a href="../../../filter.html?tag=Control%20Systems" class="chip chip-topic">Control Systems</a>
+            <a href="../../../filter.html?tag=Robotics" class="chip chip-topic">Robotics</a>
+            <a href="../../../filter.html?tag=Mechatronics" class="chip chip-topic">Mechatronics</a>
+            <a href="../../../filter.html?tag=Feedback%20Control" class="chip chip-topic">Feedback Control</a>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+          <span
+            style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); min-width: 80px;">Software</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="../../../filter.html?tag=Arduino" class="chip chip-software">Arduino</a>
+            <a href="../../../filter.html?tag=Unity" class="chip chip-software">Unity</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      style="width: 100%; aspect-ratio: 16/9; margin-bottom: 4rem; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+      <iframe width="100%" height="100%" src="https://www.youtube.com/embed/KSSMFXTRI6E" title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen style="display: block;"></iframe>
+    </div>
+
+    <!-- Project Overview -->
+    <h2 style="margin-bottom: 1rem;">Project Overview</h2>
+    <div style="line-height: 1.8; color: var(--text-main); margin-bottom: 2rem; text-align: justify;">
+      <p style="margin-bottom: 1rem;">Getting an inverted pendulum to balance autonomously is a significant engineering
+        feat in itself due to its inherent dynamic instability. To achieve this, our team implemented a highly robust
+        control architecture that combines a traditional Proportional-Integral-Derivative (PID) controller with a novel
+        Self-Adjusting Setpoint System (SASS).</p>
+      <p style="margin-bottom: 2rem;">Instead of relying on highly complex or computationally heavy algorithms, the SASS
+        dynamically shifts the pendulum's precise equilibrium point in real-time to counteract external disturbances.
+        This approach allows the system to effortlessly maintain its balance against load variations and uneven
+        surfaces—something a standard fixed-gain PID controller struggles to achieve. The concept of dynamically
+        altering reference setpoints (conceptually similar to Command Governors or Reference Governors in advanced
+        control theory) proves that highly robust stabilization can be achieved elegantly and efficiently on low-cost
+        hardware.</p>
+    </div>
+
+
+    <!-- Hardware Stack -->
+    <h2 style="margin-bottom: 1rem;">Hardware & Materials Stack</h2>
+    <ul style="margin-bottom: 4rem; list-style-position: inside; color: var(--text-main); line-height: 2;">
+      <li><strong>Microcontroller:</strong> Arduino Uno</li>
+      <li><strong>Sensor:</strong> MPU6050 Inertial Measurement Unit (IMU)</li>
+      <li><strong>Actuators:</strong> 4x Direct Current (DC) Motors</li>
+      <li><strong>Motor Driver:</strong> L298N Dual H-Bridge Motor Driver</li>
+      <li><strong>Chassis:</strong> Custom 3D-printed parts combined with lightweight metals/strong plastics</li>
+      <li><strong>Pendulum:</strong> Light curtain rod with a ball bearing for smooth rotation and a custom 3D-printed
+        holder</li>
+    </ul>
+
+    <img src="images/inverted_pendulum_4.png" alt="Cart & Pendulum Detail"
+      style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 4rem; display: block;">
+
+    <!-- Development Rundown: Vertical layout with Bento Box -->
+    <h2 style="margin-bottom: 1rem;">Development Rundown</h2>
+    <div style="line-height: 1.8; color: var(--text-main); margin-bottom: 4rem; text-align: justify;">
+      <h3 style="margin-bottom: 0.5rem; color: var(--text-light);">System Design & Hardware Integration</h3>
+      <p style="margin-bottom: 1.5rem;">The physical prototype was constructed using a cart driven by four DC motors.
+        The MPU6050 sensor was installed at the pendulum's base, utilizing a Complementary Filter to guarantee highly
+        accurate, zero-drift angle feedback. Cable management was prioritized by concealing connections within the cart
+        base for a clean aesthetic and safe operation.</p>
+
+      <h3 style="margin-bottom: 0.5rem; color: var(--text-light);">Control System Implementation</h3>
+      <p style="margin-bottom: 1.5rem;">The Arduino Uno served as the system's core, executing the SASS-PID algorithm.
+        The microcontroller continuously processed angle and acceleration data to compute the required corrective
+        forces, outputting PWM signals to the L298N driver to dynamically move the cart and maintain the pendulum's
+        upright equilibrium.</p>
+
+      <!-- Bento Box Layout for Images 1, 2, 3 -->
+      <div class="bento-grid">
+        <img src="images/inverted_pendulum_1.png" alt="Hardware Testing Phase" class="bento-main">
+        <img src="images/inverted_pendulum_2.png" alt="Physical Build Assembly" class="bento-sub">
+        <img src="images/inverted_pendulum_3.png" alt="System Components" class="bento-sub">
+      </div>
+    </div>
+
+    <!-- Challenges & Future Implementations -->
+    <h2 style="margin-bottom: 1rem;">Challenges & Future Implementations</h2>
+    <div style="line-height: 1.8; color: var(--text-main); margin-bottom: 4rem; text-align: justify;">
+      <p style="margin-bottom: 1.5rem;"><strong>Challenges Faced:</strong> The primary challenge of the inverted
+        pendulum is its inherent dynamic instability. The system requires continuous, millisecond-level precision in
+        sensing, state estimation, and actuation. We found that standard fixed-gain PID controllers quickly failed when
+        subjected to persistent environmental disturbances (like slopes or asymmetrical loads). Furthermore, achieving
+        robust adaptive control on a computationally limited, low-cost embedded device like the Arduino required highly
+        optimized logic to prevent processing delays.</p>
+      <p><strong>Future Implementations:</strong> While the SASS-PID method proved incredibly robust for its low
+        computational cost, future iterations of this hardware platform could be used to implement and test more
+        advanced, model-based controllers (such as LQR or Fuzzy Logic Control) to further bridge the gap between
+        theoretical adaptive control and practical embedded systems.</p>
+    </div>
+
+    <img src="images/inverted_pendulum_5.png" alt="Final Implementation"
+      style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 2rem; display: block;">
+
+    <div style="margin-top: 4rem; text-align: center;">
+      <a href="../../../projects.html" class="btn">&larr; Back to Projects</a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026. Ralph Jonathan R. Calzada. Electrical Engineering.</p>
+    </div>
+  </footer>
+
+  <script src="../../../main.js"></script>
+</body>
+
+</html>

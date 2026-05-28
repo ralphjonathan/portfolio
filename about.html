@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | Ralph Jonathan R. Calzada</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .memory-space {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 600px;
+      perspective: 1200px;
+      margin-top: 1.5rem;
+      border-radius: 16px;
+      background: transparent;
+      border: none;
+      overflow: hidden;
+    }
+
+    .memory-card {
+      position: absolute;
+      width: 155px;
+      padding: 8px;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 240, 255, 0.18);
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45), 0 0 15px rgba(0, 240, 255, 0.12);
+      cursor: pointer;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .memory-card img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+      pointer-events: none;
+      filter: grayscale(100%) sepia(35%) hue-rotate(185deg) brightness(0.9) contrast(1.15);
+    }
+
+    /* Floating Keyframes & Base Styles */
+    /* Positions are set dynamically by JS — only depth/opacity/anim defined here */
+    .memory-card.card-1  { --depth: 20px;  opacity: 0.80; animation: float-card-1  12s ease-in-out infinite alternate; }
+    .memory-card.card-2  { --depth: 45px;  opacity: 0.90; animation: float-card-2  10s ease-in-out infinite alternate; }
+    .memory-card.card-3  { --depth: 60px;  opacity: 1.00; animation: float-card-3  14s ease-in-out infinite alternate; }
+    .memory-card.card-3  { width: 170px; }
+    .memory-card.card-3 img { height: 128px; }
+    .memory-card.card-4  { --depth: 30px;  opacity: 0.85; animation: float-card-4  11s ease-in-out infinite alternate; }
+    .memory-card.card-5  { --depth: -25px; opacity: 0.50; filter: blur(0.5px); animation: float-card-5  13s ease-in-out infinite alternate; }
+    .memory-card.card-6  { --depth: -10px; opacity: 0.55; animation: float-card-6   9s ease-in-out infinite alternate; }
+    .memory-card.card-7  { --depth: 35px;  opacity: 0.90; animation: float-card-7  11s ease-in-out infinite alternate; }
+    .memory-card.card-8  { --depth: -15px; opacity: 0.45; filter: blur(0.4px); animation: float-card-8  15s ease-in-out infinite alternate; }
+    .memory-card.card-9  { --depth: 10px;  opacity: 0.70; animation: float-card-9  10s ease-in-out infinite alternate; }
+    .memory-card.card-10 { --depth: -5px;  opacity: 0.40; filter: blur(0.6px); animation: float-card-10 13s ease-in-out infinite alternate; }
+
+    /* Float Animations */
+    @keyframes float-card-1 {
+      0% { transform: translate3d(0, 0, 20px); }
+      50% { transform: translate3d(8px, -12px, 30px); }
+      100% { transform: translate3d(0, 0, 20px); }
+    }
+    @keyframes float-card-2 {
+      0% { transform: translate3d(0, 0, 45px); }
+      50% { transform: translate3d(-12px, 12px, 55px); }
+      100% { transform: translate3d(0, 0, 45px); }
+    }
+    @keyframes float-card-3 {
+      0% { transform: translate3d(0, 0, 60px); }
+      50% { transform: translate3d(6px, -15px, 75px); }
+      100% { transform: translate3d(0, 0, 60px); }
+    }
+    @keyframes float-card-4 {
+      0% { transform: translate3d(0, 0, 30px); }
+      50% { transform: translate3d(10px, -8px, 42px); }
+      100% { transform: translate3d(0, 0, 30px); }
+    }
+    @keyframes float-card-5 {
+      0% { transform: translate3d(0, 0, -25px); }
+      50% { transform: translate3d(-8px, -10px, -15px); }
+      100% { transform: translate3d(0, 0, -25px); }
+    }
+    @keyframes float-card-6 {
+      0% { transform: translate3d(0, 0, -10px); }
+      50% { transform: translate3d(10px, 10px, 5px); }
+      100% { transform: translate3d(0, 0, -10px); }
+    }
+    @keyframes float-card-7 {
+      0% { transform: translate3d(0, 0, 35px); }
+      50% { transform: translate3d(-8px, -14px, 50px); }
+      100% { transform: translate3d(0, 0, 35px); }
+    }
+    @keyframes float-card-8 {
+      0% { transform: translate3d(0, 0, -15px); }
+      50% { transform: translate3d(12px, 8px, -5px); }
+      100% { transform: translate3d(0, 0, -15px); }
+    }
+    @keyframes float-card-9 {
+      0% { transform: translate3d(0, 0, 10px); }
+      50% { transform: translate3d(-6px, -12px, 22px); }
+      100% { transform: translate3d(0, 0, 10px); }
+    }
+    @keyframes float-card-10 {
+      0% { transform: translate3d(0, 0, -5px); }
+      50% { transform: translate3d(10px, 14px, 8px); }
+      100% { transform: translate3d(0, 0, -5px); }
+    }
+
+    /* Modal Styling */
+    .memory-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .memory-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(15px);
+    }
+
+    .modal-body {
+      position: relative;
+      z-index: 1001;
+      width: 90%;
+      max-width: 500px;
+      background: rgba(11, 15, 25, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 240, 255, 0.1);
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .memory-modal.active .modal-body {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      font-size: 1.5rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+      transition: var(--transition-fast);
+      z-index: 1002;
+    }
+
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+
+    .modal-body img {
+      width: 100%;
+      height: auto;
+      max-height: 350px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-caption-container {
+      padding: 1.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav>
+    <div class="container">
+      <a href="index.html" class="logo">RALPH JONATHAN</a>
+      <button class="nav-toggle" aria-label="Toggle Navigation">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="container fade-in-section" style="padding-top: 4rem;">
+    <h1>About Me</h1>
+    <div style="display: flex; flex-wrap: wrap; gap: 4rem; align-items: flex-start; margin-top: 3rem;">
+      <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: flex-start;">
+        <img src="homepage_images/profile.png" alt="Ralph Jonathan" style="width: 200px; height: auto; border-radius: 12px; margin-bottom: 2rem; object-fit: cover;">
+
+        <p style="margin-bottom: 1.5rem; color: var(--text-dim); line-height: 1.6;">
+          I am a 4th-Year Electrical Engineering student deeply invested in the intersection of traditional power
+          systems and modern automation. My goal is to synthesize hardware reliability with computational efficiency.
+        </p>
+        <p style="margin-bottom: 1.5rem; color: var(--text-dim); line-height: 1.6;">
+          Beyond academic theory, my projects reflect a practical approach to problem-solving—whether through C++
+          algorithm design, harmonic mitigation simulations, or creating bespoke 3D-printed mechanical parts.
+        </p>
+
+        <!-- Technical Specialties Section -->
+        <div style="width: 100%; margin-top: 1.5rem;">
+          <h3 style="font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.25rem; color: var(--text-main); font-weight: 700;">Technical Specialties</h3>
+
+          <div style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%;">
+            <!-- Engineering -->
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--cyber-green); display: block; margin-bottom: 0.5rem; font-weight: 600;">Engineering &amp; Automation</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <a href="filter.html?tag=PSCAD" class="chip chip-software">PSCAD</a>
+                <a href="filter.html?tag=Fusion%20360" class="chip chip-software">Fusion 360</a>
+                <a href="filter.html?tag=Ultimaker%20Cura" class="chip chip-software">Ultimaker Cura</a>
+                <a href="filter.html?tag=Custom%203D%20Modeling" class="chip chip-software">Custom 3D Modeling</a>
+                <a href="filter.html?tag=3D%20Printing" class="chip chip-software">3D Printing</a>
+              </div>
+            </div>
+
+            <!-- Software & Infrastructure -->
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); display: block; margin-bottom: 0.5rem; font-weight: 600;">Software &amp; Infrastructure</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <a href="filter.html?tag=C%2B%2B" class="chip chip-software">C++</a>
+                <a href="filter.html?tag=Python" class="chip chip-software">Python</a>
+                <a href="filter.html?tag=Arduino" class="chip chip-software">Arduino</a>
+                <a href="filter.html?tag=Networking" class="chip chip-software">Networking</a>
+                <a href="filter.html?tag=Linux%20%2F%20Proxmox" class="chip chip-software">Linux / Proxmox</a>
+              </div>
+            </div>
+
+            <!-- Creative & Visual Design -->
+            <div>
+              <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #a855f7; display: block; margin-bottom: 0.5rem; font-weight: 600;">Creative &amp; Visual Design</span>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <a href="filter.html?tag=Unity" class="chip chip-software">Unity</a>
+                <a href="filter.html?tag=Blender%203D" class="chip chip-software">Blender 3D</a>
+                <a href="filter.html?tag=Photoshop" class="chip chip-software">Photoshop</a>
+                <a href="filter.html?tag=Video%20Editing" class="chip chip-software">Video Editing</a>
+                <a href="filter.html?tag=UI%20Design" class="chip chip-software">UI Design</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 1; min-width: 300px;">
+        <h2 style="font-size: 1.25rem; margin-bottom: 2rem;">My Journey</h2>
+
+        <div class="timeline-container" id="timeline-container">
+          <div class="timeline-line"></div>
+          <div class="timeline-progress" id="timeline-progress"></div>
+
+          <div class="timeline-item">
+            <span class="timeline-date">2017 — Age 14</span>
+            <h3 class="timeline-title">First Spark of Coding & Game Dev</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;">
+              Discovered a passion for programming with the dream of becoming a game developer. Without owning a laptop, I borrowed my sister's computer, pushing through the steep learning curve of YouTube tutorials. Through trial and error, I built small projects and mini-games in the Unity engine, mastering C# scripting. Since this was in a pre-AI era, every line was pure coding know-how, which instilled a deep understanding of software architecture, data structures, and how programs operate under the hood.
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <span class="timeline-date">2019 — Age 16</span>
+            <h3 class="timeline-title">Building the First Custom PC</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;">
+              Achieved a major personal milestone by building my first custom PC. This hands-on experience sparked a deep interest in hardware, components, assembly, Windows operating systems, BIOS configurations, and low-level software. Armed with a dedicated system, I began exploring more serious software tools, picking up new technical skills, and building various utility programs and software experiments.
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <span class="timeline-date">2022 — Age 18</span>
+            <h3 class="timeline-title">Electrical Engineering & Control Systems</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.75rem;">
+              Enrolled in Electrical Engineering to dive deeper into the physical foundations of technology. In my Feedback Control Systems course, I built an inverted pendulum control prototype powered by an Arduino Uno. This was my first time bridging the gap where hardware meets software—transitioning from pure software experimentation to physical control feedback loops, which completely snowballed my engineering path.
+            </p>
+            <a href="projects/engineering/inverted-pendulum/index.html" class="timeline-link">Learn More Here</a>
+          </div>
+
+          <div class="timeline-item">
+            <span class="timeline-date">2025 — Age 21</span>
+            <h3 class="timeline-title">3D Printing Entrepreneur & Home Lab</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;">
+              Launched a custom 3D printing business to bootstrap and self-fund my ambitious (and often expensive) engineering projects. The revenue fueled my hands-on research and hardware acquisitions. In the same year, I pivoted my interest towards building a robust home lab, diving deep into IT infrastructure, server setups, virtualization, and complex network configurations to support my automated systems.
+            </p>
+          </div>
+
+          <div class="timeline-item">
+            <span class="timeline-date">2026 — Age 22</span>
+            <h3 class="timeline-title">Electrical Engineering Graduation</h3>
+            <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.6;">
+              Completing my formal education with a Bachelor of Science in Electrical Engineering, graduating by the end of this month. Ready to bring my combined expertise in feedback control systems, embedded firmware, networking infrastructure, and software architecture to solve next-generation engineering challenges.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026. Ralph Jonathan R. Calzada.</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+
+</html>

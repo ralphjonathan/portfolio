@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quadruped Robot (v1) | Projects</title>
+  <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav>
+    <div class="container">
+      <a href="../../../index.html" class="logo">RALPH JONATHAN</a>
+      <ul>
+        <li><a href="../../../index.html">Home</a></li>
+        <li><a href="../../../projects.html" class="active">Projects</a></li>
+        <li><a href="../../../about.html">About</a></li>
+        <li><a href="../../../contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container fade-in-section" style="padding-top: 4rem; padding-bottom: 4rem;">
+    <a href="../../../projects.html" style="color: var(--text-dim); text-decoration: none; margin-bottom: 2rem; display: inline-block;">&larr; Back to Projects</a>
+    
+    <div style="display: flex; justify-content: space-between; align-items: baseline;">
+      <span style="font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">Engineering / Robotics</span>
+      <span style="font-size: 0.85rem; color: var(--text-dim);">Completed • March 2025</span>
+    </div>
+    <h1 style="margin-top: 0.5rem; margin-bottom: 1rem;">Quadruped Robot (v1)</h1>
+    <div style="margin-bottom: 2rem;">
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; align-items: center;">
+        <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-right: 0.5rem;">Topics:</span>
+        <a href="../../../filter.html?tag=Engineering" class="chip chip-topic">Engineering</a>
+        <a href="../../../filter.html?tag=Robotics" class="chip chip-topic">Robotics</a>
+        <a href="../../../filter.html?tag=Inverse%20Kinematics" class="chip chip-topic">Inverse Kinematics</a>
+        <a href="../../../filter.html?tag=C%2B%2B" class="chip chip-software">C++</a>
+      </div>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+        <span style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; margin-right: 0.5rem;">Software:</span>
+        <a href="../../../filter.html?tag=Unity" class="chip chip-software">Unity</a>
+        <a href="../../../filter.html?tag=Fusion%20360" class="chip chip-software">Fusion 360</a>
+        <a href="../../../filter.html?tag=Arduino" class="chip chip-software">Arduino</a>
+      </div>
+    </div>
+
+    <!-- YouTube Highlight Video Embed -->
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin-bottom: 3rem; border: 1px solid var(--border-color);">
+      <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+        src="https://www.youtube.com/embed/ff8U6MDHZGM" 
+        title="Quadruped Robot Highlight" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <!-- Hero Section / Project Overview -->
+    <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 2rem;">A custom-designed, 12-DOF (Degrees of Freedom) quadruped robot built to explore robotic locomotion and inverse kinematics. Each of the four legs is driven by three servos (two for vertical lift, one for horizontal sweep), allowing for complex, multi-directional movement and gait generation.</p>
+
+
+    <!-- Hardware Stack -->
+    <h2 style="margin-bottom: 1rem;">Hardware & Materials Stack</h2>
+    <ul style="line-height: 1.8; color: var(--text-main); margin-bottom: 3rem; padding-left: 1.5rem;">
+      <li><strong>Microcontroller:</strong> Arduino Uno</li>
+      <li><strong>Actuators:</strong> 12x SG90 Micro Servo Motors</li>
+      <li><strong>Chassis:</strong> Custom 3D Printed Casing (Designed in Fusion 360)</li>
+      <li><strong>Power System:</strong> 3x 3.6V 18650 Batteries</li>
+      <li><strong>Motor Driver:</strong> PCA9685 16-Channel PWM Servo Driver</li>
+      <li><strong>Control:</strong> Flysky Controller & Receiver for remote operation</li>
+    </ul>
+
+    <!-- Development Rundown: Vertical layout for full images -->
+    <h2 style="margin-bottom: 1rem;">Development Rundown</h2>
+    <div style="line-height: 1.8; color: var(--text-main); margin-bottom: 4rem;">
+      <p style="margin-bottom: 2rem; font-size: 1.1rem;">The development of the quadruped was a multi-stage process spanning roughly a month and a half.</p>
+      
+      <h3 style="margin-bottom: 0.5rem; color: var(--text-light);">1. Simulation & Modeling (Unity)</h3>
+      <p style="margin-bottom: 1.5rem;">Before committing to hardware, I performed the necessary kinematic math and utilized Unity to simulate the robot's movement. This allowed me to verify the gait algorithms and joint limits in a physics-based environment.</p>
+      
+      <img src="images/quadruped_unity_sim.png" alt="Unity Simulation" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 3rem; display: block;">
+
+      <h3 style="margin-bottom: 0.5rem; color: var(--text-light);">2. Mechanical Design (Fusion 360)</h3>
+      <p style="margin-bottom: 1.5rem;">Once the simulation proved successful, I designed the mechanical chassis in Fusion 360. The design phase took approximately one week to ensure the servo mounts, battery compartments, and structural joints were optimized for 3D printing. The subsequent assembly, wiring, and code integration took an additional month.</p>
+      
+      <img src="images/quadruped_fusion360.png" alt="Fusion 360 Design" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 2rem; display: block;">
+    </div>
+
+    <!-- Inverse Kinematics & Mathematical Logic -->
+    <h2 style="margin-bottom: 1rem;">Inverse Kinematics & Mathematical Logic</h2>
+    <div style="line-height: 1.8; color: var(--text-main); margin-bottom: 2rem;">
+      <p style="margin-bottom: 1rem;">The most significant challenge of this project was the control system. With 12 independent servos, simple "turn left/right" commands are insufficient for walking. To maintain balance, lifting one leg requires the other three to cooperatively shift the robot's center of gravity.</p>
+      <p style="margin-bottom: 1rem;">To achieve coordinated locomotion, I implemented a custom <strong>Inverse Kinematics (IK)</strong> engine:</p>
+      <ol style="margin-bottom: 1rem; padding-left: 1.5rem;">
+        <li style="margin-bottom: 0.5rem;"><strong>Forward Kinematics (FK):</strong> Using the Unity simulation, I mapped the specific angles of all 12 servos to calculate the precise spatial coordinates (X, Y, Z) of the end-effectors (feet).</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Inverse Kinematics (IK):</strong> I reversed the FK model. By defining a desired 3D target for a foot (e.g., "move 2cm right and 2cm forward"), the IK algorithm calculates the exact angles required for the three corresponding servos (hip-yaw, hip-pitch, and knee-pitch) to reach that coordinate.</li>
+        <li><strong>Gait Generation:</strong> Using the IK engine, I programmed distinct gaits:
+          <ul>
+            <li><strong>Trot:</strong> Diagonal legs move synchronously.</li>
+            <li><strong>Walk:</strong> A wave-like, continuous motion.</li>
+            <li><strong>Creep:</strong> High-stability gait moving one leg at a time.</li>
+          </ul>
+        </li>
+      </ol>
+      <p>The core logic relies heavily on <strong>Trigonometry</strong> and <strong>Matrix Transformations</strong> (Rotation Matrices and Translation Vectors) to convert Cartesian coordinates into joint angles (θ1, θ2, θ3). Note: The initial gait implemented a sinusoidal movement profile; future iterations will utilize cycloidal trajectories for smoother momentum transfer.</p>
+    </div>
+    <div style="text-align: center; margin-bottom: 3rem;">
+      <img src="images/quadruped_math_diagram.png" alt="Circuit and Math Diagram" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover;">
+    </div>
+
+    <!-- Challenges & Version 2 Roadmap -->
+    <h2 style="margin-bottom: 1rem;">Challenges & Version 2 Roadmap</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+      <img src="images/quadruped_physical_1.png" alt="Physical Build 1" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; aspect-ratio: 4/3;">
+      <img src="images/quadruped_physical_2.png" alt="Physical Build 2" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover; aspect-ratio: 4/3;">
+    </div>
+    
+    <div style="line-height: 1.8; color: var(--text-main); margin-bottom: 2rem;">
+      <p style="margin-bottom: 1rem;">While the logic and inverse kinematics worked flawlessly in simulation and when the robot was suspended in the air, the physical build faced mechanical limitations. The budget-friendly SG90 servos lacked the necessary torque to support the full weight of the battery pack and chassis, resulting in the robot dragging itself rather than lifting cleanly.</p>
+    </div>
+
+    <!-- Failure Video Embed -->
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+      <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+        src="https://www.youtube.com/embed/YSV7LFevMb4" 
+        title="Quadruped Robot Failure Demo" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <div style="line-height: 1.8; color: var(--text-main);">
+      <p>Despite this, Version 1 served as an invaluable learning experience in CAD design, matrix math, and custom gait generation. <strong>Version 2</strong> is currently in the planning phase and will feature high-torque servos and an upgraded power delivery system to fully realize the inverse kinematics engine in the real world.</p>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026. Ralph Jonathan R. Calzada.</p>
+    </div>
+  </footer>
+
+  <script src="../../../main.js"></script>
+</body>
+</html>

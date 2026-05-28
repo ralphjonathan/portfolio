@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ralph Jonathan R. Calzada | Electrical Engineering</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav>
+    <div class="container">
+      <a href="index.html" class="logo">RALPH JONATHAN</a>
+      <button class="nav-toggle" aria-label="Toggle Navigation">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container hero fade-in-section">
+    <div class="hero-wrapper">
+      <div class="hero-text">
+        <h1>Ralph Jonathan<br>R. Calzada</h1>
+        <p class="sub-headline">
+          4th-Year Electrical Engineering student focusing on Power Systems and Automation. <br>
+          Bridging the gap between hardware precision and software logic.
+          <br><br>
+          <span style="font-style: italic;">"Engineering systems that resonate with efficiency"</span>
+        </p>
+        <div class="hero-btns" style="display: flex; gap: 1rem;">
+          <a href="projects.html" class="btn">View Projects</a>
+          <a href="about.html" class="btn" style="border-color: transparent;">Read More &rarr;</a>
+        </div>
+      </div>
+      <div class="hero-image-container">
+        <img src="homepage_images/profile.png" alt="Profile Template" style="width: 100%; max-width: 350px; border-radius: 8px; border: transparent; object-fit: cover; aspect-ratio: 4/5; box-shadow: 0 20px 40px rgba(0,0,0,0.1); background-color: transparent;">
+      </div>
+    </div>
+  </main>
+
+  <section class="container fade-in-section" style="padding-top: 2rem;">
+    <h2 style="font-size: 1.5rem; margin-bottom: 2rem;">Selected Work Overview</h2>
+    <div class="grid">
+      <a href="projects/harmonic-mitigation/index.html" class="card">
+        <img src="homepage_images/engineering_blueprint_1774338175058.png" alt="Engineering project mock">
+        <div class="card-caption">
+          <h3>Engineering</h3>
+          <p class="card-subtitle">Power systems, harmonics, and automation.</p>
+          <div class="card-details">
+            In-depth simulations of industrial power grids using PSCAD to identify and mitigate harmonic resonance issues.
+          </div>
+        </div>
+      </a>
+      <a href="projects/autonomous-grid-ai/index.html" class="card">
+        <img src="homepage_images/programming_code_1774338200295.png" alt="Programming codebase mock">
+        <div class="card-caption">
+          <h3>Programming</h3>
+          <p class="card-subtitle">C++, Python, and AI development.</p>
+          <div class="card-details">
+            Developing real-time predictive models in Python/C++ for load demand forecasting and automated relay optimization.
+          </div>
+        </div>
+      </a>
+      <a href="projects/3d-automation-rig/index.html" class="card">
+        <img src="homepage_images/multimedia_render_1774338223050.png" alt="Multimedia 3D render mock">
+        <div class="card-caption">
+          <h3>Multimedia</h3>
+          <p class="card-subtitle">3D design and digital editing.</p>
+          <div class="card-details">
+            Designing high-fidelity 3D models and custom PCB housings using AutoCAD for precise industrial instrumentation.
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured Projects Carousel -->
+  <section class="container fade-in-section" style="padding-top: 4rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem;">Featured Showcase</h2>
+      <div style="display: flex; gap: 0.5rem;">
+        <button id="carousel-left" class="btn" style="width: 40px; height: 40px; padding: 0; display: flex; justify-content: center; align-items: center; border-radius: 8px;">&larr;</button>
+        <button id="carousel-right" class="btn" style="width: 40px; height: 40px; padding: 0; display: flex; justify-content: center; align-items: center; border-radius: 8px;">&rarr;</button>
+      </div>
+    </div>
+    
+    <div class="carousel-container">
+      <div class="carousel-track" id="project-carousel">
+        <a href="projects/harmonic-mitigation/index.html" class="carousel-item">
+          <img src="homepage_images/engineering_blueprint_1774338175058.png" alt="Harmonic Mitigation">
+          <div class="carousel-caption">
+            <h3>Harmonic Mitigation</h3>
+            <p>Industrial Grid Simulation</p>
+          </div>
+        </a>
+        <a href="projects/autonomous-grid-ai/index.html" class="carousel-item">
+          <img src="homepage_images/programming_code_1774338200295.png" alt="Autonomous Grid AI">
+          <div class="carousel-caption">
+            <h3>Autonomous Grid AI</h3>
+            <p>Python Predictive Modeling</p>
+          </div>
+        </a>
+        <a href="projects/3d-automation-rig/index.html" class="carousel-item">
+          <img src="homepage_images/multimedia_render_1774338223050.png" alt="3D Automation Rig">
+          <div class="carousel-caption">
+            <h3>3D Automation Rig</h3>
+            <p>Custom Sensor Housing</p>
+          </div>
+        </a>
+        <a href="projects/engineering/inverted-pendulum/index.html" class="carousel-item">
+          <img src="projects/engineering/inverted-pendulum/images/inverted_pendulum_3.png" alt="Inverted Pendulum">
+          <div class="carousel-caption">
+            <h3>Inverted Pendulum</h3>
+            <p>SASS PID Balancing</p>
+          </div>
+        </a>
+        <a href="projects/engineering/2-wheel-balancing-robot/index.html" class="carousel-item">
+          <img src="projects/engineering/2-wheel-balancing-robot/images/rc-and-code.jpeg" alt="2 Wheel Balancing Robot">
+          <div class="carousel-caption">
+            <h3>2 Wheel Balancing Robot</h3>
+            <p>Custom C++ Balancing</p>
+          </div>
+        </a>
+        <!-- Add more items here later -->
+        <a href="projects.html" class="carousel-item" style="display: flex; justify-content: center; align-items: center; background: var(--border-color); color: var(--text-main);">
+          <div style="font-weight: 500;">View All Projects &rarr;</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container fade-in-section" style="padding-top: 6rem; padding-bottom: 4rem;">
+    <h2 style="font-size: 1.5rem; margin-bottom: 2rem;">Core Competencies</h2>
+    <div class="skills-wrapper fade-in-section" id="skills-section">
+      <p style="color: var(--text-dim); margin-bottom: 2rem; font-size: 0.9rem;">My technical pillars aligned across disciplines</p>
+      
+      <!-- Skill 1: Engineering & Automation -->
+      <div class="skill-item">
+        <div class="skill-label">
+          <span>Engineering & Automation</span>
+          <span style="color: var(--text-dim); font-size: 0.8rem;">Expert / 90%</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar-fill" data-width="90%"></div>
+        </div>
+        <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.75;">Skills:</span>
+          <a href="filter.html?tag=PSCAD" class="chip chip-software">PSCAD</a>
+          <a href="filter.html?tag=Fusion%20360" class="chip chip-software">Fusion 360</a>
+          <a href="filter.html?tag=Ultimaker%20Cura" class="chip chip-software">Ultimaker Cura</a>
+          <a href="filter.html?tag=Custom%203D%20Modeling" class="chip chip-software">Custom 3D Modeling</a>
+          <a href="filter.html?tag=3D%20Printing" class="chip chip-software">3D Printing</a>
+        </div>
+      </div>
+      
+      <!-- Skill 2: Software & Infrastructure -->
+      <div class="skill-item">
+        <div class="skill-label">
+          <span>Software & Infrastructure</span>
+          <span style="color: var(--text-dim); font-size: 0.8rem;">Proficient / 80%</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar-fill" data-width="80%"></div>
+        </div>
+        <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.75;">Skills:</span>
+          <a href="filter.html?tag=C%2B%2B" class="chip chip-software">C++</a>
+          <a href="filter.html?tag=Python" class="chip chip-software">Python</a>
+          <a href="filter.html?tag=Arduino" class="chip chip-software">Arduino</a>
+          <a href="filter.html?tag=Networking" class="chip chip-software">Networking</a>
+          <a href="filter.html?tag=Linux%20%2F%20Proxmox" class="chip chip-software">Linux / Proxmox</a>
+        </div>
+      </div>
+      
+      <!-- Skill 3: Creative & Visual Design -->
+      <div class="skill-item">
+        <div class="skill-label">
+          <span>Creative & Visual Design</span>
+          <span style="color: var(--text-dim); font-size: 0.8rem;">Proficient / 70%</span>
+        </div>
+        <div class="skill-bar-bg">
+          <div class="skill-bar-fill" data-width="70%"></div>
+        </div>
+        <div style="margin-top: 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.75;">Skills:</span>
+          <a href="filter.html?tag=Unity" class="chip chip-software">Unity</a>
+          <a href="filter.html?tag=Blender%203D" class="chip chip-software">Blender 3D</a>
+          <a href="filter.html?tag=Photoshop" class="chip chip-software">Photoshop</a>
+          <a href="filter.html?tag=Video%20Editing" class="chip chip-software">Video Editing</a>
+          <a href="filter.html?tag=UI%20Design" class="chip chip-software">UI Design</a>
+        </div>
+      </div>
+
+      <!-- Chips removed and migrated to individual skills -->
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026. Ralph Jonathan R. Calzada. Electrical Engineering.</p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

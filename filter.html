@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Filtered Projects | Ralph Jonathan R. Calzada</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav>
+    <div class="container">
+      <a href="index.html" class="logo">RALPH JONATHAN</a>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container fade-in-section" style="padding-top: 4rem; padding-bottom: 6rem;">
+    <a href="projects.html" style="color: var(--text-dim); text-decoration: none; margin-bottom: 2rem; display: inline-block;">&larr; Back to Projects</a>
+    
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+      <h1 style="margin: 0; font-size: 2.5rem;">Projects tagged with:</h1>
+      <span id="active-tag-display" class="chip active" style="font-size: 1.2rem; cursor: default;">Loading...</span>
+    </div>
+
+    <div id="filter-results" class="filter-list">
+      <!-- Filtered items will be injected here by JS -->
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026. Ralph Jonathan R. Calzada.</p>
+    </div>
+  </footer>
+
+  <script src="projects-data.js"></script>
+  <script src="main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tag = urlParams.get('tag');
+      
+      const tagDisplay = document.getElementById('active-tag-display');
+      const resultsContainer = document.getElementById('filter-results');
+
+      if (!tag) {
+        tagDisplay.textContent = "None";
+        resultsContainer.innerHTML = "<p>No tag specified.</p>";
+        return;
+      }
+
+      tagDisplay.textContent = tag;
+
+      // Filter projects that have the tag in topics or software
+      const filtered = projectsData.filter(p => {
+        const hasTopic = p.topics && p.topics.includes(tag);
+        const hasSoftware = p.software && p.software.includes(tag);
+        return hasTopic || hasSoftware;
+      });
+
+      if (filtered.length === 0) {
+        resultsContainer.innerHTML = "<p>No projects found for this tag.</p>";
+        return;
+      }
+
+      // Build HTML for matching projects
+      resultsContainer.innerHTML = filtered.map(p => {
+        
+        // Build topics chips
+        const topicsHtml = (p.topics || []).map(t => {
+          const isActive = (t === tag) ? 'active' : '';
+          return `<a href="filter.html?tag=${encodeURIComponent(t)}" class="chip chip-topic ${isActive}">${t}</a>`;
+        }).join('');
+
+        // Build software chips
+        const softwareHtml = (p.software || []).map(s => {
+          const isActive = (s === tag) ? 'active' : '';
+          return `<a href="filter.html?tag=${encodeURIComponent(s)}" class="chip chip-software ${isActive}">${s}</a>`;
+        }).join('');
+
+        return `
+          <div class="filter-item">
+            <div class="filter-img-container">
+              <a href="${p.url}">
+                <img src="${p.image}" alt="${p.title}" class="filter-img">
+              </a>
+            </div>
+            <div class="filter-content">
+              <div>
+                <a href="${p.url}" style="text-decoration: none; color: inherit;">
+                  <h2>${p.title}</h2>
+                  <p class="filter-desc">${p.description}</p>
+                </a>
+              </div>
+              <div class="filter-chips">
+                ${topicsHtml}
+                ${softwareHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    });
+  </script>
+</body>
+</html>

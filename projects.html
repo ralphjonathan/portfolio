@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | Ralph Jonathan R. Calzada</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav>
+    <div class="container">
+      <a href="index.html" class="logo">RALPH JONATHAN</a>
+      <button class="nav-toggle" aria-label="Toggle Navigation">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="container fade-in-section" style="padding-top: 4rem;">
+    <h1>Projects</h1>
+    <p class="sub-headline">A selection of work spanning electrical engineering, software programming, and multimedia.
+    </p>
+
+    <div class="projects-layout" style="margin-top: 4rem;">
+      <!-- Sidebar / Filters -->
+      <aside class="projects-sidebar">
+        <div class="search-box">
+          <input type="text" id="project-search" placeholder="Search projects...">
+        </div>
+        
+        <div class="filter-group">
+          <h3>Categories</h3>
+          <div class="filter-chips-container" id="category-filters">
+            <button class="chip filter-chip active" data-filter="All">All</button>
+            <button class="chip filter-chip" data-filter="Engineering">Engineering</button>
+            <button class="chip filter-chip" data-filter="Software & Infrastructure">Software & Infrastructure</button>
+            <button class="chip filter-chip" data-filter="Creative & Design">Creative & Design</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Grid -->
+      <main class="projects-main">
+        <div id="projects-grid" class="grid" style="margin-top: 0;">
+          <!-- Projects will be dynamically injected here -->
+        </div>
+        <div id="no-results" style="display: none; padding: 2rem 0; color: var(--text-dim);">
+          No projects found matching your criteria.
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026. Ralph Jonathan R. Calzada.</p>
+    </div>
+  </footer>
+
+  <script src="projects-data.js"></script>
+  <script src="projects-render.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
